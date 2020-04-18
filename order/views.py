@@ -1,5 +1,4 @@
 # -*-coding:utf-8 -*-
-from django.shortcuts import render
 import datetime
 from django.http import JsonResponse
 from django.db.models import Q
@@ -39,35 +38,68 @@ def getOrderByKey(good_id, order_date):
     return result.data, unavailabe_period
 
 
-# 新增订单 TODO
-# 检查一：user + order_date + order_time_period
-# (?)检查二：good_id + order_date + order_time_period
-def addOrder(request):
-    if request.method == 'POST':
-        ret = {'code': 200, 'msg': '新增订单成功'}
-        body = json.loads(request.body)
-
-        return JsonResponse(ret)
-    else:
-        pass
-
-
 class OrderInfo(APIView):
     changeOrderStatus()
 
-    # 获取登录用户分页订单
+    # 获取登录用户的分页订单
     def get(self, request):
         ret = {'code': 200, 'msg': '查询信息成功'}
-        request_body = json.loads(request.body)
+        # request_body = json.loads(request.body)
         queryset = models.Order.objects.filter(user_account=request.user).all().order_by('-id')
 
         result = OrderSerializer(queryset, many=True)
         paginator = PageSetting()
+
+        # 计算总页数
+        total_count = len(result.data)
+        if total_count % paginator.page_size == 0:
+            total_page = total_count // paginator.page_size
+        else:
+            total_page = total_count // paginator.page_size + 1
+        ret['total_page'] = total_page
+
         page_order_list = paginator.paginate_queryset(queryset=result.data,request=request,view=self)
         ret['count'] = len(page_order_list)
         ret['data'] = page_order_list
         return JsonResponse(ret)
 
+    # 新增订单
+    def post(self, request):
+        ret = {'code': 200, 'msg': '新增订单成功'}
+        try:
+            new_order = OrderSerializer(data=request.data)
+            # 查询预约是否冲突
+            # 检查一：user + order_date + order_time_period
+            queryset1 = models.Order.objects.filter(Q(user_account=request.user) &
+                                                    Q(order_date=request.data.get('order_date')) &
+                                                    Q(order_time_period=request.data.get('order_time_period')))
+            # 检查二：good_id + order_date + order_time_period
+            queryset2 = models.Order.objects.filter(Q(good_id=request.data.get('good_id')) &
+                                                    Q(order_date=request.data.get('order_date')) &
+                                                    Q(order_time_period=request.data.get('order_time_period')))
+            if new_order.is_valid():
+
+                if queryset1.count() == 0 and queryset2.count() == 0:
+                    new_order.save()
+                    ret['data'] = new_order.data
+                else:
+                    if queryset1.count() != 0:
+                        ret['code'] = 201
+                        ret['msg'] = '用户该时间段已有预约:' + str(new_order.errors)
+                    else:
+                        ret['code'] = 201
+                        ret['msg'] = '此物品该时间段已有预约:' + str(new_order.errors)
+            else:
+                ret['code'] = 202
+                ret['msg'] = '数据错误: ' + str(new_order.errors)
+
+        except Exception as e:
+            ret['code'] = 203
+            ret['msg'] = '新增订单失败' + str(e)
+        changeOrderStatus()
+        return JsonResponse(ret)
+
+    # 更新订单
     def put(self, request):
         ret = {'code': 200, 'msg': None}
         try:
@@ -86,6 +118,7 @@ class OrderInfo(APIView):
             ret['msg'] = '编辑失败' + str(e)
         return JsonResponse(ret)
 
+    # 删除订单
     def delete(self, request):
         ret = {'code': 200, 'msg': None}
         try:

@@ -13,7 +13,6 @@ from order.serializers import *
 
 
 # 配合订单表查询商品不可用时间段(good_id, order_date)
-# TODO
 def get_unavailable_period(request):
     # 可用时间段
     queryset = OrderTimePeriod.objects.all()
@@ -34,8 +33,8 @@ class GoodInfo(APIView):
 
     # 按类型获取商品列表
     def get(self, request):
+        ret = {'code': 200, 'msg': '获取信息成功'}
         try:
-            ret = {'code': 200, 'msg': '获取信息成功'}
             queryset = models.Good.objects.filter(good_type_id=request.data.get('good_type')).all().order_by('good_number')
             result = GoodSerializer(queryset, many=True)
             ret['count'] = queryset.count()
@@ -52,8 +51,8 @@ class GoodInfo(APIView):
             # TODO 保存照片至服务器
             result = json.loads(request.body)
             good_obj = models.Good.objects.get(pk=int(result.get('good_id')))
-            # instance=要更新的对象
-            new_good = GoodSerializer(instance=good_obj, data=request.data)
+            # instance=要更新的对象, partial为True表示可以只传修改的那部分值
+            new_good = GoodSerializer(instance=good_obj, data=request.data,partial=True)
             if new_good.is_valid():
                 new_good.save()
                 ret['msg'] = '编辑成功'

@@ -132,7 +132,5 @@ STATIC_URL = '/static/'
 REST_FRAMEWORK = {
     # 全局使用自定义token认证类
     'DEFAULT_AUTHENTICATION_CLASSES': ['user.util.auth.Authtication'],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
 }
 
