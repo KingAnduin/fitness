@@ -3,8 +3,8 @@ from django.http import JsonResponse
 from django.forms.models import model_to_dict
 from rest_framework.utils import json
 from rest_framework.views import APIView
-from comments.models import CommentsInfo
-from comments.serializers import CommentsInfoSerializers
+from comments.models import CommentInfo
+from comments.serializers import CommentInfoSerializers
 from utils.Page import *
 from order.views import changeOrderStatus
 from order.models import Order
@@ -32,9 +32,9 @@ def get_comment_by_user(request):
                 single['order_time_period_name'] = item.get('order_time_period_name')
                 single['order_date'] = item.get('order_date')
                 # 获取评论内容
-                queryset = CommentsInfo.objects.filter(order=item.get('id')).first()
+                queryset = CommentInfo.objects.filter(order=item.get('id')).first()
                 if queryset is not None:
-                    comment_obj = CommentsInfoSerializers(queryset)
+                    comment_obj = CommentInfoSerializers(queryset)
                     single['comment_content'] = comment_obj.data.get('comment_content')
                     data.append(single)
             ret['count'] = len(data)
@@ -57,7 +57,7 @@ def get_comment_by_good(request):
             for item in order_list:
                 single = {}
                 # 获取评论内容
-                queryset = CommentsInfo.objects.filter(order=item.get('id')).first()
+                queryset = CommentInfo.objects.filter(order=item.get('id')).first()
                 if queryset is not None:
                     # 获取用户信息
                     user_info_obj = models.UserInfo.objects.filter(pk=item.get('user_account')).first()
@@ -65,7 +65,7 @@ def get_comment_by_good(request):
                     single['head_image'] = user_info_dic['head_image']
                     single['nickname'] = user_info_dic['nickname']
 
-                    comment_obj = CommentsInfoSerializers(queryset)
+                    comment_obj = CommentInfoSerializers(queryset)
                     single['comment_content'] = comment_obj.data.get('comment_content')
                     single['comment_create_time'] = comment_obj.data.get('comment_create_time')[0:10]
                     data.append(single)
@@ -77,15 +77,15 @@ def get_comment_by_good(request):
         return JsonResponse(ret)
 
 
-class CommentsInfoView(APIView):
+class CommentInfoView(APIView):
 
     # 分页获取登录用户的评论
     """
     def get(self, request):
         ret = {'code': 200, 'msg': '查询评论成功'}
-        queryset = models.CommentsInfo.objects.filter(user_account=request.user).all().order_by('-comment_create_time')
+        queryset = models.CommentInfo.objects.filter(user_account=request.user).all().order_by('-comment_create_time')
 
-        result = CommentsInfoSerializers(queryset, many=True)
+        result = CommentInfoSerializers(queryset, many=True)
         paginator = PageSetting()
 
         # 计算总页数
@@ -104,7 +104,7 @@ class CommentsInfoView(APIView):
         try:
             result = json.loads(request.body)
             order_obj = Order.objects.get(pk=int(result.get('order')))
-            comment = CommentsInfoSerializers(data=request.data)
+            comment = CommentInfoSerializers(data=request.data)
             if str(order_obj.order_status) == '已完成':
                 if comment.is_valid():
                     comment.save()
@@ -126,9 +126,9 @@ class CommentsInfoView(APIView):
         ret = {'code': 200, 'msg': '编辑评论成功'}
         try:
             result = json.loads(request.body)
-            comment_obj = CommentsInfo.objects.get(pk=int(result.get('order')))
+            comment_obj = CommentInfo.objects.get(pk=int(result.get('order')))
             # instance=要更新的对象
-            comment = CommentsInfoSerializers(instance=comment_obj, data=request.data)
+            comment = CommentInfoSerializers(instance=comment_obj, data=request.data)
             if comment.is_valid():
                 comment.save()
                 ret['msg'] = '编辑成功'
@@ -147,7 +147,7 @@ class CommentsInfoView(APIView):
         try:
             result = json.loads(request.body)
             # 删除商品模型
-            CommentsInfo.objects.get(pk=int(result.get('order'))).delete()
+            CommentInfo.objects.get(pk=int(result.get('order'))).delete()
             ret['msg'] = '删除成功'
         except Exception as e:
             ret['code'] = 201

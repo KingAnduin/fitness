@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='CommentsInfo',
+            name='CommentInfo',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('comment_content', models.CharField(blank=True, max_length=500, null=True, verbose_name='评论内容')),

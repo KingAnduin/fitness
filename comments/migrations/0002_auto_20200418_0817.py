@@ -11,11 +11,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='commentsinfo',
+            model_name='CommentInfo',
             name='good_id',
         ),
         migrations.RemoveField(
-            model_name='commentsinfo',
+            model_name='CommentInfo',
             name='user_account',
         ),
     ]
