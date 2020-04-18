@@ -6,7 +6,7 @@ from rest_framework.utils import json
 from rest_framework.views import APIView
 from order import models
 from order.serializers import OrderSerializer
-from order.utils.Page import *
+from utils.Page import *
 
 
 # 根据预约日期和当前时间更改订单状态 TODO 查询所有订单，消耗大
@@ -46,21 +46,17 @@ class OrderInfo(APIView):
         ret = {'code': 200, 'msg': '查询信息成功'}
         # request_body = json.loads(request.body)
         queryset = models.Order.objects.filter(user_account=request.user).all().order_by('-id')
-
         result = OrderSerializer(queryset, many=True)
+        # 自定义分页器
         paginator = PageSetting()
 
         # 计算总页数
         total_count = len(result.data)
-        if total_count % paginator.page_size == 0:
-            total_page = total_count // paginator.page_size
-        else:
-            total_page = total_count // paginator.page_size + 1
-        ret['total_page'] = total_page
+        ret['total_page'] = paginator.cal_total_page(total_count=total_count)
 
-        page_order_list = paginator.paginate_queryset(queryset=result.data,request=request,view=self)
-        ret['count'] = len(page_order_list)
-        ret['data'] = page_order_list
+        page_order = paginator.paginate_queryset(queryset=result.data,request=request,view=self)
+        ret['count'] = len(page_order)
+        ret['data'] = page_order
         return JsonResponse(ret)
 
     # 新增订单
@@ -81,6 +77,7 @@ class OrderInfo(APIView):
 
                 if queryset1.count() == 0 and queryset2.count() == 0:
                     new_order.save()
+                    # 先save()，再调用
                     ret['data'] = new_order.data
                 else:
                     if queryset1.count() != 0:
@@ -118,7 +115,7 @@ class OrderInfo(APIView):
             ret['msg'] = '编辑失败' + str(e)
         return JsonResponse(ret)
 
-    # 删除订单
+    # 删除订单(order_id)
     def delete(self, request):
         ret = {'code': 200, 'msg': None}
         try:
