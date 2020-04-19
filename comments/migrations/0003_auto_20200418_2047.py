@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='CommentInfo',
+            model_name='CommentsInfo',
             name='comment_create_time',
             field=models.DateTimeField(auto_now=True, verbose_name='创建时间'),
         ),
