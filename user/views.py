@@ -58,7 +58,7 @@ class UserRegister(APIView):
             result = json.loads(request.body)
             phone = result.get('phone')
             password = result.get('password')
-            name = result.get('name')
+            nickname = result.get('nickname')
             # phone = request._request.POST.get('phone')
             # password = request._request.POST.get('password')
             # 查询用户是否已注册
@@ -71,8 +71,8 @@ class UserRegister(APIView):
                 try:
                     user_account.save()
                     # 注册该用户并创建一个一对一UserInfo对象
-                    userinfo = models.UserInfo(user_account=user_account, name=name,
-                                               sex=None, nickname=None, birthday=None)
+                    userinfo = models.UserInfo(user_account=user_account, name=nickname,
+                                               sex=None, nickname=nickname, birthday=None)
                     userinfo.save()
                     ret['msg'] = '注册成功'
                 except Exception as e:
