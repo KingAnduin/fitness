@@ -44,7 +44,7 @@ class UserLogin(APIView):
             ret['code'] = 202
             ret['msg'] = '请求异常' + str(e)
 
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
 
 # 用户注册
@@ -85,7 +85,7 @@ class UserRegister(APIView):
             ret['code'] = 203
             ret['msg'] = '请求异常' + str(e)
 
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
 
 # 获取／编辑用户详细信息
@@ -97,7 +97,7 @@ class UserInfo(APIView):
         queryset = models.UserInfo.objects.filter(user_account=request.user)
         result = UserInfoSerializer(queryset, many=True)
         ret['data'] = result.data
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 编辑
     def put(self, request):
@@ -134,7 +134,7 @@ class UserInfo(APIView):
         except Exception as e:
             ret['code'] = 201
             ret['msg'] = '编辑失败' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
 
 # 修改密码
@@ -152,4 +152,4 @@ class ChangePassword(APIView):
         except Exception as e:
             ret['code'] = 201
             ret['msg'] = '修改密码失败' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})

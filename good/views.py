@@ -23,7 +23,7 @@ def get_unavailable_period(request):
         body = json.loads(request.body)
         order_list, ret['unavailable_period'] = getOrderByKey(good_id=body.get('good_id'), order_date=body.get('order_date'))
         ret['data'] = order_list
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
     else:
         pass
 
@@ -42,7 +42,7 @@ class GoodInfo(APIView):
         except Exception as e:
             ret['code'] = 201
             ret['msg'] = '获取信息失败' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 编辑
     def put(self, request):
@@ -62,7 +62,7 @@ class GoodInfo(APIView):
         except Exception as e:
             ret['code'] = 202
             ret['msg'] = '编辑失败' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 删除
     def delete(self, request):
@@ -75,7 +75,7 @@ class GoodInfo(APIView):
         except Exception as e:
             ret['code'] = 201
             ret['msg'] = '删除失败' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
 
 

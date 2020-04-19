@@ -57,7 +57,7 @@ class OrderInfo(APIView):
         page_order = paginator.paginate_queryset(queryset=result.data,request=request,view=self)
         ret['count'] = len(page_order)
         ret['data'] = page_order
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 新增订单
     def post(self, request):
@@ -94,7 +94,7 @@ class OrderInfo(APIView):
             ret['code'] = 203
             ret['msg'] = '新增订单失败' + str(e)
         changeOrderStatus()
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 更新订单
     def put(self, request):
@@ -113,7 +113,7 @@ class OrderInfo(APIView):
         except Exception as e:
             ret['code'] = 202
             ret['msg'] = '编辑失败' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 删除订单(order_id)
     def delete(self, request):
@@ -126,4 +126,4 @@ class OrderInfo(APIView):
         except Exception as e:
             ret['code'] = 201
             ret['msg'] = '删除失败' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})

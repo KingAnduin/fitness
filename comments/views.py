@@ -42,7 +42,7 @@ def get_comment_by_user(request):
         except Exception as e:
             ret['code'] = 201
             ret['msg'] = '获取用户评论失败:' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
 
 # 获得商品的所有订单(good_id)
@@ -74,7 +74,7 @@ def get_comment_by_good(request):
         except Exception as e:
             ret['code'] = 201
             ret['msg'] = '获取商品评论失败:' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
 
 class CommentsInfoView(APIView):
@@ -139,7 +139,7 @@ class CommentsInfoView(APIView):
         except Exception as e:
             ret['code'] = 203
             ret['msg'] = '编辑失败:' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 删除(order)
     def delete(self, request):
@@ -152,4 +152,4 @@ class CommentsInfoView(APIView):
         except Exception as e:
             ret['code'] = 201
             ret['msg'] = '删除失败:' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})

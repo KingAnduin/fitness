@@ -25,7 +25,7 @@ class NewsInfo(APIView):
         page_news = paginator.paginate_queryset(queryset=result.data, request=request, view=self)
         ret['count'] = len(page_news)
         ret['data'] = page_news
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 新增
     # TODO 图片存储
@@ -43,7 +43,7 @@ class NewsInfo(APIView):
         except Exception as e:
             ret['code'] = 203
             ret['msg'] = '新增失败:' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 编辑 (news_id)
     # TODO 图片存储
@@ -63,7 +63,7 @@ class NewsInfo(APIView):
         except Exception as e:
             ret['code'] = 203
             ret['msg'] = '编辑失败:' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 删除(news_id)
     def delete(self, request):
@@ -76,4 +76,4 @@ class NewsInfo(APIView):
         except Exception as e:
             ret['code'] = 201
             ret['msg'] = '删除失败:' + str(e)
-        return JsonResponse(ret)
+        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
