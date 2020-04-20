@@ -39,6 +39,7 @@ class UserLogin(APIView):
                 token_obj, value = models.UserToken.objects.update_or_create(user_account=obj, defaults={'token': token})
                 token_obj.save()
                 ret['token'] = token
+                ret['data'] = models.UserInfo.objects.get(user_account=obj)
                 ret['msg'] = '登录成功'
         except Exception as e:
             ret['code'] = 202
@@ -132,7 +133,7 @@ class UserInfo(APIView):
                 ret['code'] = 201
                 ret['msg'] = '数据错误: ' + str(user_info.errors)
         except Exception as e:
-            ret['code'] = 201
+            ret['code'] = 202
             ret['msg'] = '编辑失败' + str(e)
         return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
