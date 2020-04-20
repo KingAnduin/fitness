@@ -39,7 +39,9 @@ class UserLogin(APIView):
                 token_obj, value = models.UserToken.objects.update_or_create(user_account=obj, defaults={'token': token})
                 token_obj.save()
                 ret['token'] = token
-                ret['data'] = models.UserInfo.objects.get(user_account=obj)
+                # 获取用户信息
+                user_info_obj = models.UserInfo.objects.get(user_account=obj)
+                ret['data'] = UserInfoSerializer(user_info_obj).data
                 ret['msg'] = '登录成功'
         except Exception as e:
             ret['code'] = 202
