@@ -25,7 +25,7 @@ SECRET_KEY = 'd)^$z=bis-3a^f21vkfd@6fc5!*x=6s)c#gnceuoj*s119b4l+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -135,4 +135,26 @@ REST_FRAMEWORK = {
     # 全局使用自定义token认证类
     'DEFAULT_AUTHENTICATION_CLASSES': ['user.util.auth.Authtication'],
 }
+
+'''
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/home/fit/fitness_debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+'''
+
 
