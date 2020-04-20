@@ -28,23 +28,30 @@ class UserLogin(APIView):
             # phone = request._request.POST.get('phone')
             # pwd = request._request.POST.get('password')
             # 筛选出用户
-            obj = models.UserAccount.objects.filter(phone=phone, password=pwd).first()
+            obj = models.UserAccount.objects.filter(phone=phone).first()
+
             if not obj:
                 ret['code'] = 201
-                ret['msg'] = '用户名或密码错误'
+                ret['msg'] = '账户尚未注册'
             else:
-                # 为用户创建token,并更新或创建UserToken
-                token = md5()
-                # update_or_create 返回值有两个
-                token_obj, value = models.UserToken.objects.update_or_create(user_account=obj, defaults={'token': token})
-                token_obj.save()
-                ret['token'] = token
-                # 获取用户信息
-                user_info_obj = models.UserInfo.objects.get(user_account=obj)
-                ret['data'] = UserInfoSerializer(user_info_obj).data
-                ret['msg'] = '登录成功'
+
+                obj = models.UserAccount.objects.filter(phone=phone, password=pwd).first()
+                if not obj:
+                    ret['code'] = 202
+                    ret['msg'] = '账号或密码错误'
+                else:
+                    # 为用户创建token,并更新或创建UserToken
+                    token = md5()
+                    # update_or_create 返回值有两个
+                    token_obj, value = models.UserToken.objects.update_or_create(user_account=obj, defaults={'token': token})
+                    token_obj.save()
+                    ret['token'] = token
+                    # 获取用户信息
+                    user_info_obj = models.UserInfo.objects.get(user_account=obj)
+                    ret['data'] = UserInfoSerializer(user_info_obj).data
+                    ret['msg'] = '登录成功'
         except Exception as e:
-            ret['code'] = 202
+            ret['code'] = 203
             ret['msg'] = '请求异常' + str(e)
 
         return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
