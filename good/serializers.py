@@ -5,7 +5,7 @@ from .models import Good
 
 class GoodSerializer(serializers.ModelSerializer):
 
-    # 新增字段用于处理外键 TODO
+    # 新增字段用于处理外键
     # source对应数据库中的字段
     # 第一个good_type代指GoodType对象，第二个good_type指GoodType对象属性中的id
     # good_type = serializers.CharField(source="good_type.pk")

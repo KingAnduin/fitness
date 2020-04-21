@@ -28,7 +28,6 @@ class NewsInfo(APIView):
         return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 新增
-    # TODO 图片存储
     def post(self, request):
         ret = {'code': 200, 'msg': '新增信息成功'}
         try:
@@ -46,7 +45,6 @@ class NewsInfo(APIView):
         return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
     # 编辑 (news_id)
-    # TODO 图片存储
     def put(self, request):
         ret = {'code': 200, 'msg': '编辑信息成功'}
         try:

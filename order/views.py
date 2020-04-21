@@ -9,7 +9,7 @@ from order.serializers import OrderSerializer
 from utils.Page import *
 
 
-# 根据预约日期和当前时间更改订单状态 TODO 查询所有订单，消耗大
+# 根据预约日期和当前时间更改订单状态
 def changeOrderStatus():
     today = datetime.date.today()
     # today = datetime.date(2020, 4, 17)

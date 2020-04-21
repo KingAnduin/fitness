@@ -48,7 +48,6 @@ class GoodInfo(APIView):
     def put(self, request):
         ret = {'code': 200, 'msg': None}
         try:
-            # TODO 保存照片至服务器
             result = json.loads(request.body)
             good_obj = models.Good.objects.get(pk=int(result.get('good_id')))
             # instance=要更新的对象, partial为True表示可以只传修改的那部分值
