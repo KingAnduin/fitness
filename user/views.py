@@ -125,7 +125,7 @@ class UserInfo(APIView):
             img_file.write(img_data)
             img_file.close()
 
-            user_data['head_image'] = '175.24.34.223/media' + '/' + user_account.phone + '.png'
+            user_data['head_image'] = 'www.tggtds.club/media' + '/' + user_account.phone + '.png'
             # instance=要更新的对象
             user_info = UserInfoSerializer(instance=user_info_obj, data=user_data)
             if user_info.is_valid():
