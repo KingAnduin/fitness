@@ -17,7 +17,7 @@ class GoodType(models.Model):
 class Good(models.Model):
     good_number = models.CharField(max_length=40, verbose_name='商品编号', blank=True,null=True, unique=True)
     good_name = models.CharField(max_length=40,verbose_name='商品名称',blank=True,null=True,)
-    good_image = models.CharField(max_length=40, verbose_name='商品图片',blank=True,null=True,)
+    good_image = models.CharField(max_length=255, verbose_name='商品图片',blank=True,null=True,)
     good_content = models.CharField(max_length=40, verbose_name='商品简介',blank=True,null=True,)
     good_location = models.CharField(max_length=40, verbose_name='商品位置',blank=True,null=True,)
     # good_status = models.CharField(max_length=40, verbose_name='')
