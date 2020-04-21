@@ -131,6 +131,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_collected')
 
+# 用户头像存储
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 REST_FRAMEWORK = {
     # 全局使用自定义token认证类
     'DEFAULT_AUTHENTICATION_CLASSES': ['user.util.auth.Authtication'],

@@ -1,11 +1,14 @@
 # -*-coding:utf-8 -*-
 from django.shortcuts import render
 from datetime import datetime
+import os
+import base64
 from django.http import JsonResponse
 from rest_framework.utils import json
 from rest_framework.views import APIView
 from user import models
 from user.serializers import UserInfoSerializer
+from fitness import settings
 
 
 # 根据uuid4生成随机字符串
@@ -111,28 +114,20 @@ class UserInfo(APIView):
     def put(self, request):
         ret = {'code': 200, 'msg': None}
         try:
-            # result = json.loads(request.body)
-            # 获取关联用户模型
-            # user_account = models.UserAccount.objects.get(phone=request.user)
-            # user_info = models.UserInfo.objects.get(user_account=user_account)
-            # 填充信息
-            # user_info.nickname = result.get('nickname', None)
-            # user_info.name = result.get('name', None)
-            # user_info.sex = result.get('sex', None)
-            # user_info.content_phone = result.get('content_phone', None)
-            # if result.get('birthday', None) is not None:
-            # 格式化日期
-            # user_info.birthday = datetime.strptime(result.get('birthday'), '%Y-%m-%d')
-            # user_info.head_image = result.get('head_image', None)
-
-            # user_info.save()
-            # ret['msg'] = '编辑成功'
-
-            # TODO 保存照片至服务器
             user_account = models.UserAccount.objects.get(phone=request.user)
             user_info_obj = models.UserInfo.objects.get(user_account=user_account)
+
+            # TODO 保存照片至服务器
+            user_data = request.data
+            img_name = settings.MEDIA_ROOT + '/' + user_account.phone + '.png'
+            img_data = base64.b64decode(user_data.get('head_image'))
+            img_file = open(img_name, 'wb')
+            img_file.write(img_data)
+            img_file.close()
+
+            user_data['head_image'] = img_name
             # instance=要更新的对象
-            user_info = UserInfoSerializer(instance=user_info_obj, data=request.data)
+            user_info = UserInfoSerializer(instance=user_info_obj, data=user_data)
             if user_info.is_valid():
                 user_info.save()
                 ret['msg'] = '编辑成功'
