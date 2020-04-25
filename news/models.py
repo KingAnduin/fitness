@@ -12,6 +12,7 @@ class NewsInfo(models.Model):
     news_gif = models.CharField(max_length=200, blank=True,null=True,verbose_name="gif")
     news_image = models.CharField(max_length=200, blank=True, null=True, verbose_name="预览图")
     news_url = models.CharField(max_length=200, verbose_name="网址")
+    news_essentials = models.CharField(max_length=200, blank=True, null=True, verbose_name="动作要领")
 
 
 
