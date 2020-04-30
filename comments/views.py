@@ -106,18 +106,25 @@ class CommentsInfoView(APIView):
             order_obj = Order.objects.get(pk=int(result.get('order')))
             comment = CommentsInfoSerializers(data=request.data)
             if str(order_obj.order_status) == '已完成':
-                if comment.is_valid():
-                    comment.save()
-                    # 先save()，再调用
-                    ret['data'] = comment.data
+                if str(order_obj.order_is_comment) != '已评价':
+                    if comment.is_valid():
+                        # 修改订单信息
+                        order_obj.order_is_comment = '已评价'
+                        order_obj.save()
+                        comment.save()
+                        # 先save()，再调用
+                        ret['data'] = comment.data
+                    else:
+                        ret['code'] = 202
+                        ret['msg'] = '数据格式错误:' + str(comment.errors)
                 else:
-                    ret['code'] = 202
-                    ret['msg'] = '数据格式错误:' + str(comment.errors)
+                    ret['code'] = 203
+                    ret['msg'] = '已完成评价，请修改评价！'
             else:
-                ret['code'] = 203
+                ret['code'] = 204
                 ret['msg'] = '订单尚未完成，不能评价！'
         except Exception as e:
-            ret['code'] = 204
+            ret['code'] = 205
             ret['msg'] = '新增失败:' + str(e)
         return JsonResponse(ret)
 
@@ -146,8 +153,12 @@ class CommentsInfoView(APIView):
         ret = {'code': 200, 'msg': '删除评论成功'}
         try:
             result = json.loads(request.body)
-            # 删除商品模型
+            # 删除评论模型
             CommentsInfo.objects.get(pk=int(result.get('order'))).delete()
+            # 修改订单信息
+            order_obj = Order.objects.get(pk=int(result.get('order')))
+            order_obj.order_is_comment = '评价一下'
+            order_obj.save()
             ret['msg'] = '删除成功'
         except Exception as e:
             ret['code'] = 201
