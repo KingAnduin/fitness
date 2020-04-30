@@ -84,14 +84,14 @@ class OrderInfo(APIView):
                         ret['code'] = 201
                         ret['msg'] = '用户该时间段已有预约:' + str(new_order.errors)
                     else:
-                        ret['code'] = 201
+                        ret['code'] = 202
                         ret['msg'] = '此物品该时间段已有预约:' + str(new_order.errors)
             else:
-                ret['code'] = 202
+                ret['code'] = 203
                 ret['msg'] = '数据错误: ' + str(new_order.errors)
 
         except Exception as e:
-            ret['code'] = 203
+            ret['code'] = 204
             ret['msg'] = '新增订单失败' + str(e)
         changeOrderStatus()
         return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
