@@ -46,35 +46,48 @@ def get_comment_by_user(request):
 
 
 # 获得商品的所有订单(good_id)
-def get_comment_by_good(request):
-    if request.method == 'POST':
-        ret = {"code": 200, "msg": "获取商品评论成功"}
-        body = json.loads(request.body)
-        try:
-            queryset = Order.objects.filter(good_id=body.get('good_id')).all()
-            order_list = OrderSerializer(queryset, many=True).data
-            data = []
-            for item in order_list:
-                single = {}
-                # 获取评论内容
-                queryset = CommentsInfo.objects.filter(order=item.get('id')).first()
-                if queryset is not None:
-                    # 获取用户信息
-                    user_info_obj = models.UserInfo.objects.filter(pk=item.get('user_account')).first()
-                    user_info_dic = model_to_dict(user_info_obj)
-                    single['head_image'] = user_info_dic['head_image']
-                    single['nickname'] = user_info_dic['nickname']
+class CommentsByGoodView(APIView):
+    def post(self, request):
+        if request.method == 'POST':
+            ret = {"code": 200, "msg": "获取商品评论成功"}
+            body = json.loads(request.body)
+            try:
+                queryset = Order.objects.filter(good_id=body.get('good_id')).all().order_by('-id')
+                order_list = OrderSerializer(queryset, many=True).data
+                data = []
+                # 自定义分页器
+                paginator = PageSetting()
 
-                    comment_obj = CommentsInfoSerializers(queryset)
-                    single['comment_content'] = comment_obj.data.get('comment_content')
-                    single['comment_create_time'] = comment_obj.data.get('comment_create_time')[0:10]
-                    data.append(single)
-            ret['count'] = len(data)
-            ret['data'] = data
-        except Exception as e:
-            ret['code'] = 201
-            ret['msg'] = '获取商品评论失败:' + str(e)
-        return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
+                for item in order_list:
+                    single = {}
+                    # 获取评论内容
+                    queryset = CommentsInfo.objects.filter(order=item.get('id')).first()
+
+                    if queryset is not None:
+                        # 获取用户信息
+                        user_info_obj = models.UserInfo.objects.filter(pk=item.get('user_account')).first()
+                        user_info_dic = model_to_dict(user_info_obj)
+                        single['head_image'] = user_info_dic['head_image']
+                        single['nickname'] = user_info_dic['nickname']
+
+                        comment_obj = CommentsInfoSerializers(queryset)
+                        single['comment_content'] = comment_obj.data.get('comment_content')
+                        single['comment_create_time'] = comment_obj.data.get('comment_create_time')[0:10]
+                        data.append(single)
+                # ret['count'] = len(data)
+                # ret['data'] = data
+
+                # 计算总页数
+                total_count = len(data)
+                ret['total_page'] = paginator.cal_total_page(total_count=total_count)
+
+                page_order = paginator.paginate_queryset(queryset=data, request=request, view=self)
+                ret['count'] = len(page_order)
+                ret['data'] = page_order
+            except Exception as e:
+                ret['code'] = 201
+                ret['msg'] = '获取商品评论失败:' + str(e)
+            return JsonResponse(ret, json_dumps_params={'ensure_ascii':False})
 
 
 class CommentsInfoView(APIView):
@@ -106,7 +119,8 @@ class CommentsInfoView(APIView):
             order_obj = Order.objects.get(pk=int(result.get('order')))
             comment = CommentsInfoSerializers(data=request.data)
             if str(order_obj.order_status) == '已完成':
-                if str(order_obj.order_is_comment) != '已评价':
+                print('是否已评价', order_obj.order_is_comment)
+                if str(order_obj.order_is_comment) != '已评价' or order_obj.order_is_comment is None:
                     if comment.is_valid():
                         # 修改订单信息
                         order_obj.order_is_comment = '已评价'
