@@ -1,15 +1,13 @@
 # -*-coding:utf-8 -*-
-from django.shortcuts import render
-from datetime import datetime
+
 from django.http import JsonResponse
-from django.db.models import Q
 from rest_framework.utils import json
 from rest_framework.views import APIView
 from good import models
 from good.serializers import GoodSerializer
 from order.views import getOrderByKey
-from order.models import OrderTimePeriod
 from order.serializers import *
+from utils.Page import *
 
 
 # 配合订单表查询商品不可用时间段(good_id, order_date)
@@ -32,13 +30,21 @@ def get_unavailable_period(request):
 class GoodInfo(APIView):
 
     # 按类型获取商品列表
+    # 分页获取
     def get(self, request):
         ret = {'code': 200, 'msg': '获取信息成功'}
         try:
             queryset = models.Good.objects.filter(good_type_id=request.data.get('good_type')).all().order_by('good_number')
             result = GoodSerializer(queryset, many=True)
-            ret['count'] = queryset.count()
-            ret['data'] = result.data
+            paginator = PageSetting()
+            # 计算总页数
+            total_count = len(result.data)
+            ret['total_page'] = paginator.cal_total_page(total_count=total_count)
+
+            page_goods = paginator.paginate_queryset(queryset=result.data, request=request, view=self)
+
+            ret['count'] = len(page_goods)
+            ret['data'] = page_goods
         except Exception as e:
             ret['code'] = 201
             ret['msg'] = '获取信息失败' + str(e)
