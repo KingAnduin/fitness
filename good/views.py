@@ -31,7 +31,7 @@ class GoodInfo(APIView):
 
     # 按类型获取商品列表
     # 分页获取
-    def get(self, request):
+    def post(self, request):
         ret = {'code': 200, 'msg': '获取信息成功'}
         try:
             queryset = models.Good.objects.filter(good_type_id=request.data.get('good_type')).all().order_by('good_number')
