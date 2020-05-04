@@ -61,7 +61,7 @@ class OrderInfo(APIView):
 
     # 新增订单
     def post(self, request):
-        ret = {'code': 200, 'msg': '新增订单成功'}
+        ret = {'code': 200, 'msg': '新增订单成功', 'data':[]}
         try:
             new_order = OrderSerializer(data=request.data)
             # 查询预约是否冲突
