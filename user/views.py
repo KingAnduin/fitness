@@ -83,7 +83,7 @@ class UserRegister(APIView):
                     user_account.save()
                     # 注册该用户并创建一个一对一UserInfo对象
                     userinfo = models.UserInfo(user_account=user_account, name=nickname,
-                                               sex=None, nickname=nickname, birthday=None, content_phone=phone)
+                                               sex=None, nickname=nickname, birthday=None, contact_phone=phone)
                     userinfo.save()
                     ret['msg'] = '注册成功'
                 except Exception as e:
