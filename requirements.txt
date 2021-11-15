@@ -4,7 +4,7 @@ django-filter==2.2.0
 django-js-asset==1.2.2  
 djangorestframework==3.11.0 
 Markdown==3.2.1  
-pip==19.0.3 
+pip==21.1 
 PyMySQL==0.9.3  
 pytz==2019.3 
 setuptools==40.8.0 
